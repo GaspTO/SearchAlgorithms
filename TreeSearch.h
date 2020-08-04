@@ -3,16 +3,16 @@
 
 
 #include "SearchProblem.h"
-#include "Nodes.h"
 #include <array>
 
 
-template<class State>
+template<class State, class Node>
 class TreeSearch {
 private:
     bool foundSolution = false;
-    Node<State> *currentNode = nullptr;
-    Node<State> *solutionNode = nullptr;
+    Node *initialNode = nullptr;
+    Node *currentNode = nullptr;
+    Node *solutionNode = nullptr;
     SearchProblem<State> *problem = nullptr;
     bool testOnExpansion = false;
 
@@ -20,11 +20,13 @@ private:
 protected:
     virtual bool addNextGeneration(State) = 0;
 
-    virtual Node<State> createNode(State state) = 0;
+    virtual Node* nextCurrentNode() = 0;
 
-    virtual bool nextCurrentNode() = 0;
-
-    virtual bool evaluate(Node<State> *subjectNode) {
+    /*
+     *  Returns true if the search is over.
+     *  Modifies the solution node
+     */
+    virtual bool evaluate(Node *subjectNode) {
         //TODO optimization limit?
         if (getProblem().getType() == SearchProblem<State>::type::Satisfaction
             || getProblem().getType() == SearchProblem<State>::type::Hybrid) {
@@ -45,19 +47,19 @@ protected:
 
     }
 
-    virtual Node<State> *getCurrentNode() {
+    virtual Node *getCurrentNode() {
         return currentNode;
     }
 
-    virtual void setCurrentNode(Node<State> *newCurrentNode) {
+    virtual void setCurrentNode(Node *newCurrentNode) {
         currentNode = newCurrentNode;
     }
 
-    virtual Node<State> *getSolutionNode() {
+    virtual Node *getSolutionNode() {
         return solutionNode;
     }
 
-    virtual void setSolutionNode(Node<State> *newSolutionNode) {
+    virtual void setSolutionNode(Node *newSolutionNode) {
         solutionNode = newSolutionNode;
     }
 
@@ -65,27 +67,31 @@ protected:
         return problem;
     }
 
-    virtual bool getTestOnExpansion(){ return testOnExpansion;}
+    virtual bool getTestOnExpansion(){
+        return testOnExpansion;
+    }
 
 public:
-    TreeSearch(SearchProblem<State> *_problem, bool _testOnExpansion) {
+    TreeSearch(SearchProblem<State> *_problem, bool _testOnExpansion, Node* _initialNode) {
         problem = _problem;
-        setCurrentNode(createNode(getProblem()->getInitialState()));
+        initialNode = _initialNode;
         testOnExpansion = _testOnExpansion;
     }
 
     virtual bool runAlgorithm() {
+        currentNode = nextCurrentNode();
         while (true) {
             if (addNextGeneration()) {
                 return (foundSolution = true);
             }
-            if (!nextCurrentNode()) return (foundSolution = false);
+            if (nextCurrentNode()==nullptr) return (foundSolution = false);
             if (testOnExpansion) {
                 if (evaluate(getCurrentNode().getState())) {
                     setSolutionNode(getCurrentNode());
                     return (foundSolution = true);
                 }
             }
+            currentNode = nextCurrentNode();
         }
     }
 

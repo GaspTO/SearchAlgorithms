@@ -63,16 +63,16 @@ private:
 
 
 public:
-    TreeNode(TreeNode<State> *_parent, State _state, double _cost) : ParentNode<State>(_state) {
+    TreeNode(TreeNode<State> *_parent, State _state, double _cost=0) : ParentNode<State>(_state) {
         parent = _parent;
         cost = _cost;
     }
 
-    Node<State> *getParent() {
+    TreeNode<State> *getParent() {
         return parent;
     }
 
-    void setParent(Node<State> *_parent) {
+    void setParent(TreeNode<State> *_parent) {
         parent = _parent;
     }
 

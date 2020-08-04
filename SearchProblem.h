@@ -1,7 +1,6 @@
 #include <vector>
 
 
-template <class State> class TreeSearch;
 
 template <class State>
 class SearchProblem{
