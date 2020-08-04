@@ -7,10 +7,10 @@
 
 
 #include "TreeSearch.h"
-#include "Map.h"
+#include "Adapters/Map.h"
 #include "Nodes.h"
-#include "Queue.h"
-#include "UnorderedMap.h"
+#include "Adapters/Queue.h"
+#include "Adapters/UnorderedMap.h"
 
 template <class State, class HeapHandle>
 class Z_PathFinding: public TreeSearch<State, TreeNode<State>>{
